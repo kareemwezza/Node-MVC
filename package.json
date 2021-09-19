@@ -1,0 +1,25 @@
+{
+  "name": "lrn-node",
+  "version": "1.0.0",
+  "description": "starting with node and express js",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "keywords": [
+    "nodejs"
+  ],
+  "author": "kareem fouad",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  },
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "express-handlebars": "^5.3.3",
+    "mysql2": "^2.3.0",
+    "pug": "^3.0.2"
+  }
+}
