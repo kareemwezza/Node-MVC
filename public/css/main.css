@@ -19,8 +19,20 @@ main.centered {
   text-align: center;
 }
 
+.centered {
+  text-align: center;
+}
+
 form {
   display: inline;
+}
+
+.image {
+  height: 20rem;
+}
+
+.image img {
+  height: 100%;
 }
 
 .main-header {
