@@ -10,28 +10,15 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const { title, price, description, imageUrl } = req.body;
-
-  // SOME MAGIC WITH SEQUELIZE
-  // IT ADD METHODS TO THE USER TO CREATE PRODUCTS BELONGS TO
-  req.user
-    .createProduct({
-      title,
-      price,
-      imageUrl,
-      description,
-    })
-    .then(() => res.redirect("/admin/products"))
-    .catch((err) => console.log(err));
-  // we can add userId manually here
-  /* Product.create({
+  const product = new Product(
     title,
     price,
-    imageUrl,
     description,
-    userId: req.user.id,
-  })
-    .then(() => res.redirect("/admin/products"))
-    .catch((err) => console.log(err)); */
+    imageUrl,
+    null,
+    req.user._id
+  );
+  product.save().then(() => res.redirect("/admin/products"));
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -40,37 +27,25 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
   const productId = req.params.productId;
-  // Product.findByPk(productId)
-  req.user
-    .getProducts({ where: { id: productId } })
-    .then((products) => {
-      const product = products[0];
-      if (!product) {
-        return res.redirect("/admin/products");
-      }
-      res.render("admin/edit-product", {
-        docTitle: "Edit Product",
-        path: "/admin/edit-product",
-        editing: editMode,
-        product,
-      });
-    })
-    .catch((err) => {
-      console.log(err);
+  Product.findById(productId).then((product) => {
+    if (!product) {
+      return res.redirect("/admin/products");
+    }
+    res.render("admin/edit-product", {
+      docTitle: "Edit Product",
+      path: "/admin/edit-product",
+      editing: editMode,
+      product,
     });
+  });
 };
 
 exports.postEditProduct = (req, res, next) => {
   const { productId, title, price, description, imageUrl } = req.body;
-  Product.findByPk(productId)
-    .then((product) => {
-      product.title = title;
-      product.price = price;
-      product.description = description;
-      product.imageUrl = imageUrl;
-      return product.save();
-    })
-    .then((result) => {
+  const product = new Product(title, price, description, imageUrl, productId);
+  product
+    .save()
+    .then(() => {
       console.log("PRODUCT UPDATED!");
       res.redirect("/admin/products");
     })
@@ -78,8 +53,7 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  req.user
-    .getProducts()
+  Product.fetchAll()
     .then((products) => {
       res.render("admin/products", {
         docTitle: "All Products",
@@ -92,15 +66,10 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const { productId } = req.body;
-  Product.destroy({ where: { id: productId } })
+  Product.deleteById(productId)
     .then(() => {
       console.log("PRODUCT DELETED!");
       res.redirect("/admin/products");
     })
     .catch((err) => console.log(err));
-
-  // alt approach
-  /* Product.findByPk(productId).then((product) => {
-    return product.destroy()
-  }).then().catch() */
 };
