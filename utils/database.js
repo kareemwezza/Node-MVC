@@ -5,9 +5,7 @@ let _db;
 // wezza:xiAS24snARCNOODK
 
 const mongoConnect = (cb) => {
-  MongoClient.connect(
-    "mongodb+srv://wezza:xiAS24snARCNOODK@cluster0.t3cuq.mongodb.net/shop?retryWrites=true&w=majority"
-  )
+  MongoClient.connect("uri")
     .then((client) => {
       console.log("Database connected successfully");
       _db = client.db();
