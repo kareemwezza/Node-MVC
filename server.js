@@ -1,7 +1,6 @@
 const PORT = 3000;
 const express = require("express");
-
-const { mongoConnect } = require("./utils/database");
+const mongoose = require("mongoose");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
@@ -31,8 +30,15 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(errorController.get404);
 
-mongoConnect(() => {
-  app.listen(PORT, () => {
-    console.log(`Your server is running on port ${PORT}`);
+mongoose
+  .connect(
+    "mongodb+srv://wezza:xiAS24snARCNOODK@cluster0.t3cuq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+  )
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Your server is running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
   });
-});
