@@ -18,10 +18,9 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
-  User.findById("614f826915985b0d7971e0e6")
+  User.findById("61520c2548a04b32be67de08")
     .then((user) => {
-      req.user = new User(user.name, user.email, user.cart, user._id);
-      console.log(user);
+      req.user = user;
       next();
     })
     .catch((err) => console.log(err));
@@ -32,7 +31,7 @@ app.use(errorController.get404);
 
 mongoose
   .connect(
-    "mongodb+srv://wezza:xiAS24snARCNOODK@cluster0.t3cuq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+    "mongodb+srv://wezza:xiAS24snARCNOODK@cluster0.t3cuq.mongodb.net/shop?retryWrites=true&w=majority"
   )
   .then(() => {
     app.listen(PORT, () => {
