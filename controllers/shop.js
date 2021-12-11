@@ -8,10 +8,13 @@ exports.getIndex = (req, res, next) => {
         docTitle: "My Shop",
         products,
         path: "/",
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
+    });
 };
 
 exports.getProducts = (req, res, next) => {
@@ -21,10 +24,13 @@ exports.getProducts = (req, res, next) => {
         docTitle: "All Products",
         products,
         path: "/products",
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
+    });
 };
 
 exports.getProduct = (req, res, next) => {
@@ -35,10 +41,13 @@ exports.getProduct = (req, res, next) => {
         docTitle: `My Shop | ${product.title}`,
         product: product,
         path: "/products",
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
+    });
 };
 
 exports.getCart = (req, res, next) => {
@@ -49,10 +58,13 @@ exports.getCart = (req, res, next) => {
         docTitle: "My Cart",
         path: "/cart",
         products: user.cart.items,
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
+    });
 };
 
 exports.postCart = (req, res, next) => {
@@ -64,7 +76,11 @@ exports.postCart = (req, res, next) => {
     .then(() => {
       res.redirect("/cart");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
+    });
 };
 
 exports.postCartDelete = (req, res, next) => {
@@ -74,14 +90,17 @@ exports.postCartDelete = (req, res, next) => {
     .then(() => {
       res.redirect("/cart");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
+    });
 };
 
 exports.getCheckOut = (req, res, next) => {
   res.render("shop/checkout", {
     docTitle: "Check Out",
     path: "/checkout",
-    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -92,10 +111,13 @@ exports.getOrders = (req, res, next) => {
         docTitle: "Your Orders",
         path: "/orders",
         orders,
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
+    });
 };
 
 exports.postOrder = (req, res, next) => {
@@ -120,5 +142,9 @@ exports.postOrder = (req, res, next) => {
     .then(() => {
       res.redirect("/orders");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
+    });
 };

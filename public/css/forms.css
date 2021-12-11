@@ -21,3 +21,29 @@
 .form-control textarea:focus {
   outline-color: #00695c;
 }
+
+.form-control input.invalid,
+.form-control textarea.invalid {
+  border-color: red;
+}
+
+.user-message {
+  margin: auto;
+  width: 90%;
+  border: 1px solid rgb(90, 28, 28);
+  border-radius: 3px;
+  background-color: rgb(231, 88, 88);
+  text-align: center;
+  padding: 10px;
+}
+
+.user-message--error {
+  background-color: rgb(245, 125, 125);
+  border-color: red;
+}
+
+@media (min-width: 768px) {
+  .user-message {
+    width: 30rem;
+  }
+}
