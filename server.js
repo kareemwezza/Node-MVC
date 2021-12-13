@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
+const multer = require("multer");
 // lib to add message across requests and remove it in sessions
 const flash = require("connect-flash");
 
@@ -24,6 +25,28 @@ const store = new MongoDBStore({
   collection: "sessions",
 });
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    const unique_prefix = Date.now() + Math.round(Math.random() * 1e9);
+    cb(null, `${unique_prefix}-${file.originalname}`);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
 // protect against XSS attacks
 const csrfProtection = csrf();
 
@@ -32,7 +55,11 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use(express.static("public"));
+app.use("/images", express.static("images"));
 app.use(express.urlencoded({ extended: true }));
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
 app.use(
   session({
     secret: "Any value",
@@ -72,6 +99,7 @@ app.get("/500", errorController.get500);
 app.use(errorController.get404);
 
 app.use((error, req, res, next) => {
+  console.log(error);
   res.redirect("/500");
 });
 

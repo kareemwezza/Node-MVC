@@ -23,7 +23,6 @@ router.post(
       .isString()
       .isLength({ min: 3 })
       .trim(),
-    body("imageUrl", "Must be a valid url.").isURL(),
     body("price", "Must be a decimal number.").isFloat(),
     body("description", "Must be betwwn 10 and 400 characters.")
       .isLength({ min: 10, max: 400 })
@@ -46,7 +45,6 @@ router.post(
       .isString()
       .isLength({ min: 3 })
       .trim(),
-    body("imageUrl", "Must be a valid url.").isURL(),
     body("price", "Must be a decimal number.").isFloat(),
     body("description", "Must be betwwn 10 and 400 characters.")
       .isLength({ min: 10, max: 400 })

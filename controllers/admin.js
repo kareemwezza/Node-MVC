@@ -13,7 +13,8 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
-  const { title, price, description, imageUrl } = req.body;
+  const { title, price, description } = req.body;
+  const image = req.file;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).render("admin/edit-product", {
@@ -27,10 +28,25 @@ exports.postAddProduct = (req, res, next) => {
         title: title,
         price: price,
         description: description,
-        imageUrl: imageUrl,
       },
     });
   }
+  if (!image) {
+    return res.status(422).render("admin/edit-product", {
+      docTitle: "Add Product",
+      path: "/admin/add-product",
+      editing: false,
+      hasError: true,
+      errorMessage: "Invalid File type Attached! please try again.",
+      validationErrors: [],
+      product: {
+        title: title,
+        price: price,
+        description: description,
+      },
+    });
+  }
+  const imageUrl = image.path;
   const product = new Product({
     title,
     price,
@@ -42,6 +58,7 @@ exports.postAddProduct = (req, res, next) => {
     .save()
     .then(() => res.redirect("/admin/products"))
     .catch((err) => {
+      console.log(err);
       const error = new Error(err);
       error.httpStatusCode = 500;
       next(error);
@@ -71,7 +88,8 @@ exports.getEditProduct = (req, res, next) => {
 };
 
 exports.postEditProduct = (req, res, next) => {
-  const { productId, title, price, description, imageUrl } = req.body;
+  const { productId, title, price, description } = req.body;
+  const image = req.file;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).render("admin/edit-product", {
@@ -85,15 +103,21 @@ exports.postEditProduct = (req, res, next) => {
         title: title,
         price: price,
         description: description,
-        imageUrl: imageUrl,
         _id: productId,
       },
     });
   }
-  Product.updateOne(
-    { _id: productId, userId: req.user._id },
-    { title, price, description, imageUrl }
-  )
+
+  let updatedProduct = {
+    title,
+    price,
+    description,
+  };
+  if (image) {
+    updatedProduct.imageUrl = image.path;
+  }
+
+  Product.updateOne({ _id: productId, userId: req.user._id }, updatedProduct)
     .then(() => {
       console.log("PRODUCT UPDATED!");
       res.redirect("/admin/products");
