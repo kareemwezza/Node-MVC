@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const PdfDoc = require("pdfkit");
 const Product = require("../models/product");
 const Order = require("../models/order");
 
@@ -163,13 +164,13 @@ exports.getInvoice = (req, res, next) => {
       }
       const invoiceName = `invoice-${orderId}.pdf`;
       const invoicePath = path.join("data", "invoices", invoiceName);
-      const file = fs.createReadStream(invoicePath);
+      // const file = fs.createReadStream(invoicePath);
       res.setHeader(
         "Content-disposition",
         'inline; filename="' + invoiceName + '"'
       );
       res.setHeader("Content-type", "application/pdf");
-      file.pipe(res);
+      // file.pipe(res);
       // This reads the entire file and send it back = memory consume and not fine with large files
       /* fs.readFile(invoicePath, (err, data) => {
         if (err) {
@@ -182,6 +183,20 @@ exports.getInvoice = (req, res, next) => {
         res.setHeader("Content-type", "application/pdf");
         res.send(data);
       }); */
+      // creating pdf on the fly
+      const pdf = new PdfDoc();
+      pdf.pipe(fs.createWriteStream(invoicePath));
+      pdf.pipe(res);
+      pdf.fontSize(16).text("Order Invoice", { align: "center" });
+      let totalPrice = 0;
+      order.products.forEach((product) => {
+        totalPrice += product.quantity * product.product.price;
+        pdf.text(
+          `${product.product.title} - ${product.product.price} x ${product.quantity}`
+        );
+      });
+      pdf.text(`Total Price: ${totalPrice}`);
+      pdf.end();
     })
     .catch((err) => {
       const error = new Error(err);
