@@ -123,7 +123,7 @@ exports.postEditProduct = (req, res, next) => {
     updatedProduct
   )
     .then((oldProduct) => {
-      fileHelper.deleteFile(oldProduct.imageUrl);
+      image && fileHelper.deleteFile(oldProduct.imageUrl);
       console.log("PRODUCT UPDATED!");
       res.redirect("/admin/products");
     })
@@ -162,5 +162,21 @@ exports.postDeleteProduct = (req, res, next) => {
       const error = new Error(err);
       error.httpStatusCode = 500;
       next(error);
+    });
+};
+
+exports.deleteProduct = (req, res, next) => {
+  const { productId } = req.params;
+  Product.findOneAndDelete({ _id: productId, userId: req.user._id })
+    .then((product) => {
+      fileHelper.deleteFile(product.imageUrl);
+      console.log("PRODUCT DELETED!");
+      res.status(200).json({ message: "Product deleted successfully!." });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        message: "An error has been occured, please try again.",
+      });
     });
 };
