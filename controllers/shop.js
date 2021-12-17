@@ -117,10 +117,26 @@ exports.postCartDelete = (req, res, next) => {
 };
 
 exports.getCheckOut = (req, res, next) => {
-  res.render("shop/checkout", {
-    docTitle: "Check Out",
-    path: "/checkout",
-  });
+  req.user
+    .populate("cart.items.productId")
+    .then((user) => {
+      let totalPrice = 0;
+      const products = user.cart.items;
+      products.forEach((p) => {
+        totalPrice += p.quantity * p.productId.price;
+      });
+      res.render("shop/checkout", {
+        docTitle: "Check Out",
+        path: "/checkout",
+        products,
+        totalPrice,
+      });
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      err.httpStatusCode = 500;
+      next(error);
+    });
 };
 
 exports.getOrders = (req, res, next) => {
